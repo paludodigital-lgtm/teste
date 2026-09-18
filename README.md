@@ -75,3 +75,61 @@ muda `--duration`. As marcas estão nas chamadas `place(...)` em
 Se você tiver o logo Lavland em PNG com fundo transparente, jogue em
 `assets/logo.png`. Hoje o título usa a fonte Inter — a constante `LOGO` já
 está declarada em `src/render_reel.py` para quem for plugar a arte real.
+
+---
+
+# Homem mais alto (edição do vídeo)
+
+Pedido: pegar `assets/video-original.mp4` (13,6s, 720x960, 30fps, com áudio e
+legenda queimada) e deixar **só** o homem mais alto que a mulher, sem mexer em
+mais nada.
+
+**Saída:** `out/lavland-homem-mais-alto.mp4` — mesma resolução, duração
+(13,567s), fps e faixa de áudio copiada bit a bit do original.
+
+## Como funciona
+
+```bash
+pip install opencv-python-headless mediapipe pillow numpy
+apt-get install -y ffmpeg libegl1
+
+ffmpeg -i assets/video-original.mp4 -start_number 0 /tmp/work/src_%04d.png
+python3 src/analyze_people.py     # ~2 min: detecta e separa as duas pessoas
+python3 src/render_taller.py      # ~1 min: escala o homem e recompõe
+```
+
+`src/analyze_people.py` usa o MediaPipe Pose Landmarker para achar as duas
+pessoas em cada frame e guardar uma máscara por pessoa.
+
+`src/render_taller.py` escala o homem em **1,09** (`--scale` para mudar)
+ancorado nos pés dele, o que faz ele crescer só para cima — os sapatos
+continuam no mesmo ponto do chão, então piso, sombra e enquadramento não
+mudam. Depois a mulher volta por cima, recortada do frame original, e a
+legenda é recolocada na posição exata.
+
+Escolha do 1,09: medindo os 319 frames com as duas pessoas detectadas, o homem
+era em média 2% mais baixo. Com 1,09 ele fica mais alto em 98,7% dos frames,
+com folga mediana de 46px acima da cabeça dela, e sem nunca sair pelo topo do
+quadro.
+
+## Armadilhas que apareceram no caminho
+
+| Problema | Solução |
+|---|---|
+| MediaPipe devolvia a MESMA pessoa duas vezes quando eles se encostam (47% dos frames) | plano B: detecta um, apaga ele do quadro com inpaint, detecta de novo |
+| `numpy_view()` da máscara aponta para memória liberada do MediaPipe | copiar o array; sem isso o processo morre com segfault |
+| A máscara do homem invadia as pernas da mulher | cada pixel vai para o esqueleto mais próximo, com distância máxima do próprio dono |
+| Landmark do pé dele caía do lado da mulher quando ele está cortado no quadro | âncora vem do centro de massa da base da própria máscara |
+| A legenda era escalada junto e aparecia duplicada | remover a legenda antes de escalar e recolocar por cima no fim |
+| O inpaint borrava o braço esticado dele | preencher o buraco com o fundo do próprio quadro escalado, que ali já é fundo de verdade |
+| A âncora tremia e ele "pulsava" de tamanho | média móvel da âncora, respeitando cortes de cena |
+| A máscara vazava no card final do logo e o deformava | trava que só empresta máscara de um vizinho se a cena for a mesma |
+
+## Limites
+
+- Sobram artefatos leves onde o braço dele está bem esticado (por volta de
+  3s-4s): o preenchimento do fundo atrás do braço antigo não é perfeito. Em
+  velocidade normal quase não se vê, mas pausando dá para notar.
+- 6 frames em 329 ficaram sem detecção das duas pessoas e saem idênticos ao
+  original.
+- Os 78 frames finais são o card do logo, sem pessoas — passam intactos.
