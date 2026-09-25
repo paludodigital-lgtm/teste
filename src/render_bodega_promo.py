@@ -93,6 +93,16 @@ def render_text_layer(shot, fonts_dir, path):
         base_y = 1290
     line_h = big.size * 0.95
     y = base_y
+    # Carimbo opcional acima do título ("1ª RODADA"), estilo reel de rodízio
+    stamp = shot.get("stamp")
+    if stamp:
+        sf = font(fonts_dir, "Montserrat-ExtraBold.ttf", 34)
+        tw = d.textlength(stamp, font=sf)
+        pw, ph = tw + 56, 60
+        px, py = (W - pw) / 2, y - big.size * 0.55 - ph - 14
+        ImageDraw.Draw(shadow).rounded_rectangle((px + 3, py + 5, px + pw + 3, py + ph + 5), 12, fill=(0, 0, 0, 140))
+        d.rounded_rectangle((px, py, px + pw, py + ph), 12, fill=CREAM + (255,))
+        d.text((W / 2, py + ph / 2 + 1), stamp, font=sf, fill=RED + (255,), anchor="mm")
     for line in title_lines:
         draw_text_with_shadow(d, (W / 2, y), line, big, (255, 255, 255, 255), blur_layer=shadow)
         y += line_h
