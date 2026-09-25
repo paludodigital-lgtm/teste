@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Lav Perform × Bora Lavá</title>
+<style>
+  @page { size: 1280px 720px; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --yellow: #FBE64C; --yellow-d: #F2D51F;
+    --blue: #1E8FC7; --navy: #1B4A85; --navy-d: #143A6B;
+    --lilac: #B79BD8; --ink: #17324F; --muted: #5B6B7E;
+    --bg: #F4F8FB; --white: #fff;
+  }
+  html, body { font-family: "Liberation Sans", "DejaVu Sans", Arial, sans-serif; color: var(--ink); }
+  .page { width: 1280px; height: 720px; position: relative; overflow: hidden; page-break-after: always; background: var(--white); padding: 56px 72px; }
+  .page:last-child { page-break-after: auto; }
+  .bubble { position: absolute; border-radius: 50%; background: radial-gradient(circle at 35% 35%, rgba(255,255,255,.9), rgba(120,190,240,.35) 60%, rgba(30,143,199,.25)); box-shadow: inset 0 0 18px rgba(30,143,199,.25); opacity:.7 }
+  .foot { position: absolute; left: 72px; right: 72px; bottom: 28px; display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); letter-spacing: .3px; }
+  .foot b { color: var(--navy); }
+  .kicker { font-size: 14px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--blue); margin-bottom: 8px; }
+  h1 { font-size: 56px; line-height: 1.05; color: var(--navy); font-weight: 900; }
+  h2 { font-size: 40px; line-height: 1.1; color: var(--navy); font-weight: 900; margin-bottom: 26px; }
+  h2 .hl { background: linear-gradient(transparent 55%, var(--yellow) 55%); padding: 0 4px; }
+  h3 { font-size: 20px; color: var(--navy); font-weight: 800; margin-bottom: 8px; }
+  p, li { font-size: 17px; line-height: 1.45; }
+  .muted { color: var(--muted); }
+  .grid { display: grid; gap: 22px; }
+  .card { background: var(--bg); border-radius: 18px; padding: 22px 24px; border: 1px solid #E3ECF3; }
+  .card.y { background: var(--yellow); border-color: var(--yellow-d); }
+  .card.n { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .card.n h3 { color: var(--yellow); }
+  .card.n p, .card.n li { color: #E8F0FA; }
+  .card.n td { background: transparent !important; color: #fff; }
+  .page.compact td { padding: 7px 12px; font-size: 14px; line-height: 1.3; }
+  .page.compact th { padding: 8px 12px; }
+  .page.compact .tag { font-size: 10px; padding: 3px 9px; }
+  .tag { display: inline-block; font-size: 12px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; padding: 5px 12px; border-radius: 999px; background: var(--navy); color: var(--yellow); }
+  .tag.l { background: var(--lilac); color: #fff; }
+  .tag.b { background: var(--blue); color: #fff; }
+  .tag.g { background: #1F9D67; color: #fff; }
+  .tag.r { background: #D9534F; color: #fff; }
+  ul { list-style: none; }
+  ul li { padding-left: 24px; position: relative; margin-bottom: 8px; }
+  ul li::before { content: ""; position: absolute; left: 0; top: 8px; width: 11px; height: 11px; border-radius: 50%; background: var(--blue); }
+  ul.y li::before { background: var(--yellow-d); }
+  table { border-collapse: collapse; width: 100%; font-size: 15.5px; }
+  th { text-align: left; background: var(--navy); color: var(--yellow); padding: 10px 14px; font-size: 13px; letter-spacing: 1.2px; text-transform: uppercase; }
+  td { padding: 10px 14px; border-bottom: 1px solid #E3ECF3; vertical-align: top; line-height: 1.4; }
+  tr:nth-child(even) td { background: #F9FBFD; }
+  .price { font-size: 26px; font-weight: 900; color: var(--navy); }
+  .wa { background: #E7FFDB; border-radius: 14px 14px 14px 4px; padding: 14px 16px; font-size: 15px; line-height: 1.5; color: #1a2e1a; box-shadow: 0 1px 2px rgba(0,0,0,.12); white-space: pre-line; position: relative; }
+  .wa::after { content: "✔✔"; position: absolute; right: 10px; bottom: 4px; font-size: 10px; color: #53BDEB; }
+  .wa-wrap { background: #E5DDD5; border-radius: 18px; padding: 16px; }
+  .wa-wrap .who { font-size: 12px; font-weight: 700; color: var(--navy); margin-bottom: 6px; }
+  .num { width: 46px; height: 46px; border-radius: 50%; background: var(--yellow); color: var(--navy); font-weight: 900; font-size: 22px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .step { display: flex; gap: 16px; align-items: flex-start; }
+  .img { border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(20,58,107,.25); }
+  .img img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .side { position: absolute; top: 0; bottom: 0; left: 0; width: 14px; background: linear-gradient(var(--yellow), var(--blue)); }
+  .ok { color: #1F9D67; font-weight: 800; }
+  .no { color: #D9534F; font-weight: 800; }
+  .small { font-size: 14px; }
+</style>
+</head>
+<body>
+
+<!-- 1 CAPA -->
+<section id="p1" class="page" style="background: linear-gradient(135deg, #1B4A85 0%, #1E8FC7 100%); padding: 0;">
+  <div class="bubble" style="width:260px;height:260px;left:-80px;top:-90px"></div>
+  <div class="bubble" style="width:120px;height:120px;left:980px;top:60px"></div>
+  <div class="bubble" style="width:340px;height:340px;left:1040px;top:470px"></div>
+  <div class="bubble" style="width:70px;height:70px;left:560px;top:600px"></div>
+  <div style="position:absolute;left:72px;top:80px;width:620px;color:#fff">
+    <div class="kicker" style="color:var(--yellow)">Plataforma Lav Perform</div>
+    <h1 style="color:#fff;font-size:64px">Apresentação de<br>implantação</h1>
+    <div style="width:110px;height:8px;background:var(--yellow);border-radius:4px;margin:26px 0"></div>
+    <p style="font-size:24px;color:#E8F0FA;font-weight:700">Cliente: Bora Lavá — Lavanderia Self-Service</p>
+    <p style="font-size:18px;color:#CFE2F5;margin-top:8px">Unidades Farroupilha e Bento Gonçalves · RS</p>
+    <div style="margin-top:44px;display:flex;gap:12px;flex-wrap:wrap">
+      <span class="tag" style="background:var(--yellow);color:var(--navy)">Campanhas WhatsApp</span>
+      <span class="tag" style="background:var(--yellow);color:var(--navy)">Agente de IA</span>
+      <span class="tag" style="background:var(--yellow);color:var(--navy)">Revisão de conteúdo</span>
+    </div>
+  </div>
+  <div style="position:absolute;right:120px;top:130px;width:430px;height:430px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 30px 60px rgba(0,0,0,.25)">
+    <img src="img/1.webp" style="width:400px">
+  </div>
+  <div class="foot" style="color:#CFE2F5"><span>Lav Perform · Setembro 2026</span><span>Documento de trabalho — versão 1</span></div>
+</section>
+
+<!-- 2 O QUE VAMOS VER -->
+<section id="p2" class="page">
+  <div class="side"></div>
+  <div class="kicker">Agenda</div>
+  <h2>O que esta <span class="hl">apresentação</span> cobre</h2>
+  <div class="grid" style="grid-template-columns: 1fr 1fr 1fr; margin-top:10px">
+    <div class="card n">
+      <div class="num" style="margin-bottom:14px">1</div>
+      <h3>A plataforma e as unidades</h3>
+      <p>Como a Lav Perform vai operar para a Bora Lavá, e os dados de cada unidade (Farroupilha completa, Bento em levantamento).</p>
+    </div>
+    <div class="card y">
+      <div class="num" style="background:var(--navy);color:var(--yellow);margin-bottom:14px">2</div>
+      <h3>Campanhas para disparo no WhatsApp</h3>
+      <p>Três criativos prontos, com objetivo, público, texto sugerido e ordem de envio recomendada.</p>
+    </div>
+    <div class="card">
+      <div class="num" style="margin-bottom:14px">3</div>
+      <h3>Agente de IA e revisão</h3>
+      <p>Configuração completa do atendente virtual, as correções feitas no material recebido e as pendências para aprovação.</p>
+    </div>
+  </div>
+  <div class="card" style="margin-top:26px;display:flex;gap:18px;align-items:center">
+    <span class="tag b">Objetivo</span>
+    <p>Validar com a Bora Lavá tudo o que entra no ar: identidade, mensagens, preços, limites do agente e cronograma. Nada sobe sem o “ok” da lavanderia.</p>
+  </div>
+  <div class="foot"><span><b>Lav Perform</b> × Bora Lavá</span><span>02</span></div>
+</section>
+
+<!-- 3 A PLATAFORMA -->
+<section id="p3" class="page">
+  <div class="side"></div>
+  <div class="kicker">Plataforma</div>
+  <h2>Como a <span class="hl">Lav Perform</span> funciona para a Bora Lavá</h2>
+  <div class="grid" style="grid-template-columns: repeat(4, 1fr)">
+    <div class="card"><h3>📲 Base de clientes</h3><p class="small">Cadastro centralizado dos clientes das duas unidades, com origem, unidade de preferência e histórico de contato.</p></div>
+    <div class="card"><h3>📣 Disparos no WhatsApp</h3><p class="small">Campanhas segmentadas por unidade, com imagem + texto, agendamento e controle de frequência para não cansar o cliente.</p></div>
+    <div class="card"><h3>🤖 Agente de IA</h3><p class="small">Atendente virtual no WhatsApp que responde preços, horários, endereço e dúvidas no tom da marca, 24h por dia.</p></div>
+    <div class="card"><h3>📊 Acompanhamento</h3><p class="small">Relatório por campanha: entregues, lidas, respostas e avaliações geradas no Google. Transbordo para humano quando necessário.</p></div>
+  </div>
+  <h3 style="margin-top:30px">Fluxo de operação</h3>
+  <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+    <div class="card y" style="flex:1;text-align:center;padding:16px"><b>Campanha aprovada</b><br><span class="small">criativo + texto</span></div>
+    <span style="font-size:28px;color:var(--blue)">›</span>
+    <div class="card" style="flex:1;text-align:center;padding:16px"><b>Disparo segmentado</b><br><span class="small">por unidade e horário</span></div>
+    <span style="font-size:28px;color:var(--blue)">›</span>
+    <div class="card" style="flex:1;text-align:center;padding:16px"><b>Cliente responde</b><br><span class="small">no WhatsApp da unidade</span></div>
+    <span style="font-size:28px;color:var(--blue)">›</span>
+    <div class="card n" style="flex:1;text-align:center;padding:16px"><b style="color:var(--yellow)">Agente de IA atende</b><br><span class="small">ou chama um humano</span></div>
+  </div>
+  <div class="foot"><span><b>Lav Perform</b> × Bora Lavá</span><span>03</span></div>
+</section>
+
+<!-- 4 UNIDADES -->
+<section id="p4" class="page">
+  <div class="side"></div>
+  <div class="kicker">Unidades</div>
+  <h2>Duas unidades, <span class="hl">uma marca</span></h2>
+  <div class="grid" style="grid-template-columns: 1fr 1fr">
+    <div class="card n" style="min-height:400px">
+      <span class="tag" style="background:var(--yellow);color:var(--navy)">Unidade 1 · Configurada</span>
+      <h3 style="font-size:28px;margin-top:14px">Bora Lavá Farroupilha</h3>
+      <table style="margin-top:14px;font-size:15px">
+        <tr><td style="color:#9FC2E6;width:150px;border-color:#2B5C9A">Endereço</td><td style="border-color:#2B5C9A">Rua Barão do Rio Branco, 269 – Sala 1<br>Bairro do Parque · Farroupilha/RS · CEP 95180-000</td></tr>
+        <tr><td style="color:#9FC2E6;border-color:#2B5C9A">Operação</td><td style="border-color:#2B5C9A">Autoatendimento (self-service)</td></tr>
+        <tr><td style="color:#9FC2E6;border-color:#2B5C9A">Horário</td><td style="border-color:#2B5C9A">Seg a sáb: 8h às 21h<br>Domingo: 8h às 20h</td></tr>
+        <tr><td style="color:#9FC2E6;border-color:#2B5C9A">WhatsApp</td><td style="border-color:#2B5C9A">(54) 99329-5411</td></tr>
+        <tr><td style="color:#9FC2E6;border-color:#2B5C9A">Pagamento</td><td style="border-color:#2B5C9A">Pix e cartão de crédito/débito</td></tr>
+        <tr><td style="color:#9FC2E6;border:0">Máquinas</td><td style="border:0">Electrolux 12 kg e Speed Queen 14 kg (lavagem e secagem)</td></tr>
+      </table>
+    </div>
+    <div class="card" style="min-height:400px;border:2px dashed var(--lilac);background:#FBF8FF">
+      <span class="tag l">Unidade 2 · Aguardando dados</span>
+      <h3 style="font-size:28px;margin-top:14px">Bora Lavá Bento Gonçalves</h3>
+      <p class="muted" style="margin-top:8px">Para replicar a configuração, precisamos confirmar:</p>
+      <ul style="margin-top:14px">
+        <li>Endereço completo e ponto de referência</li>
+        <li>Horário de funcionamento (pode diferir de Farroupilha)</li>
+        <li>Número de WhatsApp da unidade (ou se será o mesmo número)</li>
+        <li>Máquinas disponíveis e tabela de preços</li>
+        <li>Formas de pagamento aceitas</li>
+        <li>Link de avaliação do Google da unidade</li>
+      </ul>
+      <p class="small muted" style="margin-top:16px">Sugestão: o agente de IA identifica a unidade logo no primeiro contato (“Você está falando da unidade de Farroupilha ou de Bento?”) e responde com os dados corretos.</p>
+    </div>
+  </div>
+  <div class="foot"><span><b>Lav Perform</b> × Bora Lavá</span><span>04</span></div>
+</section>
+
+<!-- 5 MARCA -->
+<section id="p5" class="page">
+  <div class="side"></div>
+  <div class="kicker">Identidade</div>
+  <h2>Marca e <span class="hl">tom de voz</span></h2>
+  <div style="display:grid;grid-template-columns: 380px 1fr;gap:40px">
+    <div>
+      <div style="background:#fff;border-radius:24px;padding:10px;border:1px solid #E3ECF3;box-shadow:0 10px 30px rgba(20,58,107,.12)"><img src="img/1.webp" style="width:100%"></div>
+      <div style="display:flex;gap:10px;margin-top:18px">
+        <div style="flex:1;height:64px;border-radius:12px;background:#FBE64C;display:flex;align-items:flex-end;padding:6px;font-size:11px;font-weight:700;color:#1B4A85">Amarelo</div>
+        <div style="flex:1;height:64px;border-radius:12px;background:#1E8FC7;display:flex;align-items:flex-end;padding:6px;font-size:11px;font-weight:700;color:#fff">Azul</div>
+        <div style="flex:1;height:64px;border-radius:12px;background:#1B4A85;display:flex;align-items:flex-end;padding:6px;font-size:11px;font-weight:700;color:#fff">Marinho</div>
+        <div style="flex:1;height:64px;border-radius:12px;background:#B79BD8;display:flex;align-items:flex-end;padding:6px;font-size:11px;font-weight:700;color:#fff">Lilás</div>
+      </div>
+    </div>
+    <div>
+      <div class="grid" style="grid-template-columns:1fr 1fr">
+        <div class="card"><h3>Tom geral</h3><p>Amigável, leve e direto. Trata o cliente por <b>“você”</b>; usa <b>“senhor(a)”</b> com clientes mais velhos ou quando o cliente se apresenta assim.</p></div>
+        <div class="card"><h3>Emojis</h3><p>Com moderação: no máximo um ou dois por mensagem, sempre ligados ao contexto (🫧 🌬️ 😊).</p></div>
+        <div class="card y"><h3>Expressões da casa</h3><p>“Pode contar!” · “Deixa comigo!” · “Sua roupa sai como nova!” · “Lave, secou, seguiu o dia!” · “Lavar bem faz bem”</p></div>
+        <div class="card"><h3>O que evitar</h3><p>Gírias muito jovens, termos formais demais, palavrões e promessas que a unidade não confirma.</p></div>
+      </div>
+      <p class="small muted" style="margin-top:18px">Assinatura visual dos criativos: logo no canto superior esquerdo com o nome da unidade, fundo azul do ambiente, bolhas de sabão, frases manuscritas em amarelo.</p>
+    </div>
+  </div>
+  <div class="foot"><span><b>Lav Perform</b> × Bora Lavá</span><span>05</span></div>
+</section>
+
+<!-- 6 CAMPANHAS VISÃO GERAL -->
+<section id="p6" class="page">
+  <div class="side"></div>
+  <div class="kicker">Campanhas · WhatsApp</div>
+  <h2>Três disparos <span class="hl">prontos para rodar</span></h2>
+  <div class="grid" style="grid-template-columns: 1fr 1fr 1fr">
+    <div class="card" style="padding:14px">
+      <div class="img" style="height:300px"><img src="img/4.jpg"></div>
+      <div style="margin-top:14px"><span class="tag b">Campanha 1</span></div>
+      <h3 style="margin-top:8px">Nossos Valores</h3>
+      <p class="small">Tabela de preços dos ciclos. Informativa, ideal para abrir o relacionamento e para clientes novos.</p>
+    </div>
+    <div class="card" style="padding:14px">
+      <div class="img" style="height:300px"><img src="img/3.jpg"></div>
+      <div style="margin-top:14px"><span class="tag l">Campanha 2</span></div>
+      <h3 style="margin-top:8px">Cupom BORA10</h3>
+      <p class="small">10% de desconto. Gera visita e reativa quem não voltou. Exige regra de resgate definida.</p>
+    </div>
+    <div class="card" style="padding:14px">
+      <div class="img" style="height:300px"><img src="img/2.jpg"></div>
+      <div style="margin-top:14px"><span class="tag g">Campanha 3</span></div>
+      <h3 style="margin-top:8px">Avalie no Google</h3>
+      <p class="small">Pedido de avaliação após a visita. Fortalece a reputação local e o ranqueamento no Google Maps.</p>
+    </div>
+  </div>
+  <div class="foot"><span><b>Lav Perform</b> × Bora Lavá</span><span>06</span></div>
+</section>
+
+<!-- 7 CAMPANHA 1 -->
+<section id="p7" class="page">
+  <div class="side"></div>
+  <div style="display:grid;grid-template-columns: 330px 1fr;gap:40px;align-items:start">
+    <div class="img" style="height:560px"><img src="img/4.jpg"></div>
+    <div>
+      <span class="tag b">Campanha 1 · Informativa</span>
+      <h2 style="margin-top:10px;margin-bottom:14px">Nossos Valores</h2>
+      <div class="grid" style="grid-template-columns:1fr 1fr;gap:14px">
+        <div class="card" style="padding:14px 18px"><h3 class="small" style="margin-bottom:4px">Objetivo</h3><p class="small">Tirar a dúvida nº 1 do cliente (“quanto custa?”) antes mesmo de ele perguntar.</p></div>
+        <div class="card" style="padding:14px 18px"><h3 class="small" style="margin-bottom:4px">Público</h3><p class="small">Toda a base de Farroupilha; clientes novos nos primeiros 7 dias.</p></div>
+      </div>
+      <div class="wa-wrap" style="margin-top:14px">
+        <div class="who">Bora Lavá Farroupilha</div>
+        <div class="wa">Oi! 😊 Aqui é da Bora Lavá Farroupilha.
+Passando pra deixar nossos valores por ciclo:
+
+🫧 Lavagem Electrolux 12 kg — R$ 19,90
+🌬️ Secagem Electrolux 12 kg — R$ 19,90
+🫧 Lavagem Speed Queen 14 kg — R$ 27,90
+🌬️ Secagem Speed Queen 14 kg — R$ 27,90
+
+Pix e cartão direto na máquina. Estamos na Rua Barão do Rio Branco, 269 – Sala 1, de seg a sáb das 8h às 21h e domingo das 8h às 20h.
+Lavar bem faz bem! 💛</div>
+      </div>
+      <p class="small muted" style="margin-top:12px">Melhor horário: terça a quinta, 10h–11h ou 18h–19h. Para Bento, trocar endereço, horário e preços após confirmação.</p>
+    </div>
+  </div>
+  <div class="foot"><span><b>Lav Perform</b> × Bora Lavá</span><span>07</span></div>
+</section>
+
+<!-- 8 CAMPANHA 2 -->
+<section id="p8" class="page">
+  <div class="side"></div>
+  <div style="display:grid;grid-template-columns: 330px 1fr;gap:40px;align-items:start">
+    <div class="img" style="height:560px"><img src="img/3.jpg"></div>
+    <div>
+      <span class="tag l">Campanha 2 · Conversão</span>
+      <h2 style="margin-top:10px;margin-bottom:14px">Cupom BORA10 · 10% de desconto</h2>
+      <div class="grid" style="grid-template-columns:1fr 1fr;gap:14px">
+        <div class="card" style="padding:14px 18px"><h3 class="small" style="margin-bottom:4px">Objetivo</h3><p class="small">Trazer o cliente de volta à loja e converter quem ainda não experimentou.</p></div>
+        <div class="card" style="padding:14px 18px"><h3 class="small" style="margin-bottom:4px">Público</h3><p class="small">Clientes sem visita há 30+ dias e leads que perguntaram preço e não vieram.</p></div>
+      </div>
+      <div class="wa-wrap" style="margin-top:14px">
+        <div class="who">Bora Lavá Farroupilha</div>
+        <div class="wa">Mais tempo pra o que importa! ⏱️
+A Bora Lavá Farroupilha liberou um cupom de *10% de desconto* pra você:
+
+🎟️ *BORA10*
+
+Válido até [DATA] na unidade da Rua Barão do Rio Branco, 269. Pra usar, é só [MECÂNICA DE RESGATE].
+Lave, secou, seguiu o dia! 💛</div>
+      </div>
+      <div class="card y" style="margin-top:12px;padding:12px 16px">
+        <p class="small"><b>⚠️ Antes de disparar:</b> definir como o cupom é resgatado numa operação self-service (crédito no app/totem, código no pagamento, ou apresentação ao atendente), a validade e se vale para as duas unidades.</p>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span><b>Lav Perform</b> × Bora Lavá</span><span>08</span></div>
+</section>
+
+<!-- 9 CAMPANHA 3 -->
+<section id="p9" class="page">
+  <div class="side"></div>
+  <div style="display:grid;grid-template-columns: 330px 1fr;gap:40px;align-items:start">
+    <div class="img" style="height:560px"><img src="img/2.jpg"></div>
+    <div>
+      <span class="tag g">Campanha 3 · Reputação</span>
+      <h2 style="margin-top:10px;margin-bottom:14px">Avalie a Bora Lavá no Google</h2>
+      <div class="grid" style="grid-template-columns:1fr 1fr;gap:14px">
+        <div class="card" style="padding:14px 18px"><h3 class="small" style="margin-bottom:4px">Objetivo</h3><p class="small">Aumentar o volume e a nota das avaliações no perfil do Google da unidade.</p></div>
+        <div class="card" style="padding:14px 18px"><h3 class="small" style="margin-bottom:4px">Gatilho</h3><p class="small">Enviar 1 a 2 dias após uma visita ou após um atendimento resolvido com sucesso.</p></div>
+      </div>
+      <div class="wa-wrap" style="margin-top:14px">
+        <div class="who">Bora Lavá Farroupilha</div>
+        <div class="wa">Gostou da sua experiência por aqui? 💛
+Sua avaliação no Google leva menos de 1 minuto e ajuda muito a Bora Lavá a continuar oferecendo sempre o melhor pra você.
+
+⭐ Avalie aqui: [LINK DE AVALIAÇÃO GOOGLE]
+
+Clientes como você fazem parte dessa história. Muito obrigado!</div>
+      </div>
+      <div class="card" style="margin-top:12px;padding:12px 16px">
+        <p class="small"><b>Precisamos:</b> o link curto de avaliação do Google de cada unidade (Perfil da Empresa › “Pedir avaliações”). Se o cliente responder com uma reclamação em vez de avaliar, o agente registra e chama um humano.</p>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span><b>Lav Perform</b> × Bora Lavá</span><span>09</span></div>
+</section>
+
+<!-- 10 CALENDÁRIO -->
+<section id="p10" class="page">
+  <div class="side"></div>
+  <div class="kicker">Campanhas · Sequência</div>
+  <h2>Ordem de envio <span class="hl">recomendada</span></h2>
+  <div class="grid" style="grid-template-columns:1fr 1fr 1fr 1fr">
+    <div class="card"><div class="num">1</div><h3 style="margin-top:12px">Semana 1</h3><p class="small"><b>Nossos Valores</b> para toda a base. Abre a conversa e valida o número no WhatsApp.</p></div>
+    <div class="card"><div class="num">2</div><h3 style="margin-top:12px">Semana 2–3</h3><p class="small"><b>Cupom BORA10</b> para inativos e leads. Validade curta (7 a 10 dias) para gerar urgência.</p></div>
+    <div class="card"><div class="num">3</div><h3 style="margin-top:12px">Contínua</h3><p class="small"><b>Avalie no Google</b> disparada automaticamente 1–2 dias após visita ou atendimento.</p></div>
+    <div class="card y"><div class="num" style="background:var(--navy);color:var(--yellow)">4</div><h3 style="margin-top:12px">Mensal</h3><p class="small">Revisão de resultados e nova campanha (ex.: dica de lavagem, horários com menos fila).</p></div>
+  </div>
+  <div class="card n" style="margin-top:24px">
+    <h3>Boas práticas de disparo</h3>
+    <ul style="columns:2;column-gap:40px;margin-top:6px">
+      <li>Máximo de 1 campanha promocional por semana por cliente.</li>
+      <li>Sempre com opção de sair (“responda SAIR para não receber mais”).</li>
+      <li>Imagem + texto curto; o detalhe fica com o agente de IA.</li>
+      <li>Segmentar por unidade: cliente de Bento não recebe endereço de Farroupilha.</li>
+      <li>Evitar domingo à noite e horários fora do funcionamento.</li>
+      <li>Medir: entregues, lidas, respostas, visitas e avaliações.</li>
+    </ul>
+  </div>
+  <div class="foot"><span><b>Lav Perform</b> × Bora Lavá</span><span>10</span></div>
+</section>
+
+<!-- 11 AGENTE - DADOS -->
+<section id="p11" class="page">
+  <div class="side"></div>
+  <div class="kicker">Agente de IA · Passo 1 e 2</div>
+  <h2>Quem é o <span class="hl">atendente virtual</span> da Bora Lavá</h2>
+  <div class="grid" style="grid-template-columns: 1.1fr 1fr">
+    <div class="card">
+      <h3>Dados que o agente conhece</h3>
+      <table style="margin-top:8px">
+        <tr><td class="muted" style="width:170px">Nome</td><td>Bora Lavá Farroupilha</td></tr>
+        <tr><td class="muted">Operação</td><td>Autoatendimento — o cliente lava e seca na hora</td></tr>
+        <tr><td class="muted">Endereço</td><td>Rua Barão do Rio Branco, 269 – Sala 1, Bairro do Parque, Farroupilha/RS</td></tr>
+        <tr><td class="muted">Horário</td><td>Seg a sáb 8h–21h · Dom 8h–20h</td></tr>
+        <tr><td class="muted">WhatsApp</td><td>(54) 99329-5411</td></tr>
+        <tr><td class="muted">Pagamento</td><td>Pix e cartão de crédito/débito</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="card y" style="margin-bottom:16px">
+        <h3>Estilo de comunicação</h3>
+        <ul class="y" style="margin-top:6px">
+          <li>Tom amigável; “você” por padrão, “senhor(a)” com clientes mais velhos.</li>
+          <li>Poucos emojis, sem sotaque ou regionalismo forçado.</li>
+          <li>Usa: “Pode contar!”, “Deixa comigo!”, “Sua roupa sai como nova!”</li>
+          <li>Evita: gírias muito jovens, formalidade excessiva, palavrões.</li>
+        </ul>
+      </div>
+      <div class="card n">
+        <h3>Primeiro contato</h3>
+        <p>“Oi! Bem-vindo à Lavanderia Bora Lavá! Sou o assistente virtual daqui. O que posso fazer por você hoje?”</p>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span><b>Lav Perform</b> × Bora Lavá</span><span>11</span></div>
+</section>
+
+<!-- 12 AGENTE - PREÇOS E MENSAGENS -->
+<section id="p12" class="page">
+  <div class="side"></div>
+  <div class="kicker">Agente de IA · Passo 3 e 4</div>
+  <h2>Serviços, preços e <span class="hl">mensagens modelo</span></h2>
+  <div class="grid" style="grid-template-columns: 1fr 1.2fr">
+    <div>
+      <table>
+        <tr><th>Serviço</th><th style="text-align:right">Preço / ciclo</th></tr>
+        <tr><td>🫧 Lavagem Electrolux 12 kg</td><td style="text-align:right"><span class="price">R$ 19,90</span></td></tr>
+        <tr><td>🌬️ Secagem Electrolux 12 kg</td><td style="text-align:right"><span class="price">R$ 19,90</span></td></tr>
+        <tr><td>🫧 Lavagem Speed Queen 14 kg</td><td style="text-align:right"><span class="price">R$ 27,90</span></td></tr>
+        <tr><td>🌬️ Secagem Speed Queen 14 kg</td><td style="text-align:right"><span class="price">R$ 27,90</span></td></tr>
+      </table>
+      <p class="small muted" style="margin-top:10px">Prazo de entrega e peso mínimo não se aplicam: o cliente opera a máquina na hora. O agente deve explicar isso quando perguntarem.</p>
+      <div class="card y" style="margin-top:14px;padding:14px 16px">
+        <h3 class="small">Quando perguntam preço</h3>
+        <p class="small">“Nossos valores funcionam por ciclo de lavagem e de secagem, conforme a máquina escolhida: …” (lista acima) “Você pode escolher a máquina ideal conforme a quantidade de roupas. 😊”</p>
+      </div>
+    </div>
+    <div class="grid" style="grid-template-columns:1fr;gap:12px">
+      <div class="card" style="padding:14px 18px"><h3 class="small">Reclamação</h3><p class="small">“Que chato, sinto muito! Me conta o que aconteceu, que vamos encontrar a melhor maneira de resolver!”</p></div>
+      <div class="card" style="padding:14px 18px"><h3 class="small">Fora do horário <span class="tag l" style="font-size:10px;padding:3px 8px">nova · sugerida</span></h3><p class="small">“Oi! Agora estamos fechados. Nosso horário é de seg a sáb, das 8h às 21h, e domingo das 8h às 20h. Posso adiantar preços e endereço por aqui — é só perguntar. 😊”</p></div>
+      <div class="card" style="padding:14px 18px"><h3 class="small">Ciclo concluído <span class="tag l" style="font-size:10px;padding:3px 8px">ajustada</span></h3><p class="small">“Sua roupa já está pronta, sequinha e cheirosa! Pode retirar da máquina.” — usar só se a unidade avisar o fim do ciclo pelo WhatsApp.</p></div>
+      <div class="card" style="padding:14px 18px;border:2px dashed var(--lilac);background:#FBF8FF"><h3 class="small">Confirmação de pedido</h3><p class="small muted">Não se aplica ao self-service. Sugerimos remover ou trocar por “Confirmação de dúvida resolvida”: “Perfeito! Qualquer coisa, pode contar! 💛”</p></div>
+    </div>
+  </div>
+  <div class="foot"><span><b>Lav Perform</b> × Bora Lavá</span><span>12</span></div>
+</section>
+
+<!-- 13 AGENTE - COMPORTAMENTO -->
+<section id="p13" class="page">
+  <div class="side"></div>
+  <div class="kicker">Agente de IA · Passo 5</div>
+  <h2>Limites: o que o agente <span class="hl">resolve sozinho</span></h2>
+  <div class="grid" style="grid-template-columns: 1fr 1fr">
+    <div>
+      <table>
+        <tr><th>Situação</th><th>Resolve sozinho?</th></tr>
+        <tr><td>Informar preços, horários, endereço e serviços</td><td class="ok">Sim</td></tr>
+        <tr><td>Informar se a unidade está aberta agora</td><td class="ok">Sim</td></tr>
+        <tr><td>Registrar reclamação</td><td class="ok">Sim (e avisa humano)</td></tr>
+        <tr><td>Fazer agendamento</td><td class="no">Não — self-service não agenda</td></tr>
+        <tr><td>Cancelar pedido / estornar</td><td class="no">Não</td></tr>
+        <tr><td>Dar desconto fora das campanhas</td><td class="no">Não</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="card n" style="margin-bottom:16px">
+        <h3>Chama um humano quando…</h3>
+        <ul style="margin-top:6px">
+          <li>Peça danificada ou reclamação de dano.</li>
+          <li>Cliente muito insatisfeito ou irritado.</li>
+          <li>Problema com máquina, pagamento ou dinheiro preso.</li>
+          <li>Qualquer pedido de estorno, cancelamento ou desconto.</li>
+        </ul>
+      </div>
+      <div class="card y">
+        <h3>Nunca fala sobre</h3>
+        <ul class="y" style="margin-top:6px">
+          <li>Margem de lucro ou custos da lavanderia.</li>
+          <li>Concorrentes (nem comparar, nem criticar).</li>
+          <li>Prazos ou promessas que a unidade não confirmou.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span><b>Lav Perform</b> × Bora Lavá</span><span>13</span></div>
+</section>
+
+<!-- 14 REVISÃO -->
+<section id="p14" class="page compact">
+  <div class="side"></div>
+  <div class="kicker">Revisão do material recebido</div>
+  <h2>O que <span class="hl">corrigimos</span> e o que precisa de decisão</h2>
+  <table>
+    <tr><th style="width:230px">Item</th><th>Como estava</th><th>Como fica</th><th style="width:120px">Status</th></tr>
+    <tr><td>Nome da marca</td><td>“Bora Lavar” (no briefing)</td><td>“Bora Lavá”, como na logo e nos criativos</td><td><span class="tag g">Corrigido</span></td></tr>
+    <tr><td>Boas-vindas</td><td>“Bem-vindo a Lavanderia”</td><td>“Bem-vindo à Lavanderia” (crase)</td><td><span class="tag g">Corrigido</span></td></tr>
+    <tr><td>Roupa pronta</td><td>“sua roupa já esta pronta”</td><td>“já está pronta” + ajuste ao self-service</td><td><span class="tag g">Corrigido</span></td></tr>
+    <tr><td>Chamar humano</td><td>“problemas com as maquinas”</td><td>“máquinas”; incluído pagamento/estorno</td><td><span class="tag g">Corrigido</span></td></tr>
+    <tr><td>Nome da máquina</td><td>“Speed 14 kg” na tabela e no criativo; “Speed Queen” na mensagem</td><td>Padronizar como <b>Speed Queen 14 kg</b> (marca correta)</td><td><span class="tag b">Confirmar</span></td></tr>
+    <tr><td>Campo “Cidade e Estado”</td><td>Endereço completo no campo de cidade</td><td>Separado em endereço / cidade-UF / CEP</td><td><span class="tag g">Corrigido</span></td></tr>
+    <tr><td>Agendamento e horário</td><td>“Confirmar disponibilidade de horário: SIM” mas “Fazer agendamento: NÃO”</td><td>Agente informa se está aberto; não agenda máquina</td><td><span class="tag b">Confirmar</span></td></tr>
+    <tr><td>Campos em branco</td><td>Confirmação de pedido, fora do horário, prazo, peso mínimo</td><td>Fora do horário redigida; demais marcados “não se aplica”</td><td><span class="tag b">Confirmar</span></td></tr>
+    <tr><td>Cupom BORA10</td><td>Sem regra de resgate, validade ou unidade</td><td>Definir mecânica antes do disparo</td><td><span class="tag r">Pendente</span></td></tr>
+    <tr><td>Unidade Bento Gonçalves</td><td>Sem dados</td><td>Ver lista da página 4</td><td><span class="tag r">Pendente</span></td></tr>
+  </table>
+  <div class="foot"><span><b>Lav Perform</b> × Bora Lavá</span><span>14</span></div>
+</section>
+
+<!-- 15 PRÓXIMOS PASSOS -->
+<section id="p15" class="page" style="background: linear-gradient(135deg, #1B4A85 0%, #1E8FC7 100%);">
+  <div class="bubble" style="width:300px;height:300px;left:1050px;top:-100px"></div>
+  <div class="bubble" style="width:160px;height:160px;left:-40px;top:520px"></div>
+  <div class="kicker" style="color:var(--yellow)">Próximos passos</div>
+  <h2 style="color:#fff">Para colocar no ar</h2>
+  <div class="grid" style="grid-template-columns:1fr 1fr;gap:18px">
+    <div class="step"><div class="num">1</div><div><h3 style="color:var(--yellow)">Aprovação deste material</h3><p style="color:#E8F0FA">Bora Lavá valida textos, preços, tom e limites do agente (páginas 5 a 14).</p></div></div>
+    <div class="step"><div class="num">2</div><div><h3 style="color:var(--yellow)">Dados de Bento Gonçalves</h3><p style="color:#E8F0FA">Endereço, horário, WhatsApp, máquinas, preços e link do Google.</p></div></div>
+    <div class="step"><div class="num">3</div><div><h3 style="color:var(--yellow)">Regra do cupom BORA10</h3><p style="color:#E8F0FA">Como resgatar, validade e em quais unidades vale.</p></div></div>
+    <div class="step"><div class="num">4</div><div><h3 style="color:var(--yellow)">Links de avaliação Google</h3><p style="color:#E8F0FA">Um link curto por unidade para a campanha 3.</p></div></div>
+    <div class="step"><div class="num">5</div><div><h3 style="color:var(--yellow)">Importação da base</h3><p style="color:#E8F0FA">Lista de clientes com telefone e unidade (planilha ou export do sistema).</p></div></div>
+    <div class="step"><div class="num">6</div><div><h3 style="color:var(--yellow)">Teste e go-live</h3><p style="color:#E8F0FA">Simulação do agente com a equipe, disparo piloto para 10% da base, depois escala.</p></div></div>
+  </div>
+  <div style="position:absolute;right:72px;bottom:60px;display:flex;align-items:center;gap:18px">
+    <div style="width:110px;height:110px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center"><img src="img/1.webp" style="width:100px"></div>
+    <div style="color:#fff"><b style="font-size:22px">Lav Perform</b><br><span style="color:#CFE2F5">Plataforma de relacionamento para lavanderias</span></div>
+  </div>
+  <div class="foot" style="color:#CFE2F5"><span>Lav Perform × Bora Lavá</span><span>15</span></div>
+</section>
+
+</body>
+</html>
