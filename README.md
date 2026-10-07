@@ -133,3 +133,22 @@ quadro.
 - 6 frames em 329 ficaram sem detecção das duas pessoas e saem idênticos ao
   original.
 - Os 78 frames finais são o card do logo, sem pessoas — passam intactos.
+
+---
+
+# Seld Lavanderia Express Uruguaiana — reel
+
+`src/render_seld.py` monta um reel vertical de 14s a partir de dois vídeos
+gravados no celular e da logo da Seld.
+
+**Saídas:** `out/seld-uruguaiana-reel.mp4` (com trilha) e
+`out/seld-uruguaiana-reel-sem-audio.mp4` (para usar um áudio em alta no Instagram).
+
+- Takes escolhidos e roteiro: lista `SHOTS` no topo do script
+- Tratamento: estabilização (vidstab), redução de ruído, correção de cor,
+  upscale 464x832 → 1080x1920 e nitidez (CAS); tambor em câmera lenta (fonte 60fps)
+- Identidade: azul-marinho `#284660`, vermelho `#E93337` e branco, tirados da logo
+
+```bash
+python3 src/render_seld.py --src-a VIDEO_A.mp4 --src-b VIDEO_B.mp4 --logo logo.png
+```
