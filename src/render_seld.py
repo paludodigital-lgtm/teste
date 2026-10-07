@@ -176,9 +176,14 @@ def paste_scaled(base, layer, cx, cy, scale, alpha=1.0):
 
 def brand_bar(base, progress):
     """Barrinha de progresso na base, nas cores da marca."""
-    d = ImageDraw.Draw(base)
-    d.rectangle((0, H - 14, W, H), fill=NAVY + (200,))
-    d.rectangle((0, H - 14, int(W * progress), H), fill=RED + (255,))
+    m, h, y = 48, 6, H - 44
+    layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(layer)
+    d.rounded_rectangle((m, y, W - m, y + h), h // 2, fill=WHITE + (70,))
+    x1 = m + (W - 2 * m) * progress
+    if x1 > m + h:
+        d.rounded_rectangle((m, y, x1, y + h), h // 2, fill=RED + (235,))
+    base.alpha_composite(layer)
 
 
 def small_tag(text):
