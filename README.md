@@ -182,3 +182,28 @@ do script: cada cena tem o take, o intervalo em segundos, o texto e se é
   mais completas) ficaram de fora.
 - Sem transcrição automática: o modelo de voz não pôde ser baixado nesta
   rede. As falas usadas são curtas e entram com o áudio original.
+
+---
+
+# Vídeo de dicas (ajuste do vídeo de WhatsApp)
+
+Vídeo de 3 min, gravado pela agência na SuperLav, com dicas para o cliente:
+fachada, vertical e horizontal, entorno, localização e estacionamento.
+
+**Saída:** `out/dicas-gravacao.mp4` — 2:39, 1080x1920, 30fps, ~63 MB.
+
+- **Áudio original**, só com o volume nivelado (-14 LUFS). Sem trilha.
+- Cortes de silêncios e respiros, e as duas demonstrações sem fala
+  (filmando o entorno e o posto) encurtadas para o melhor pedaço.
+- Subido de 576x1024 para 1080x1920, com nitidez e cor levemente realçadas.
+- Título de cada dica no topo e a frase-chave na base, no mesmo visual do
+  tutorial.
+
+```bash
+python3 src/edit_dicas.py --src video-do-whatsapp.mp4 --out out/dicas-gravacao.mp4
+```
+
+Os cortes (`KEEP`) e os textos (`SECTIONS`, `CALLOUTS`) ficam no topo do
+script, em segundos do vídeo original. Eles foram tirados de uma transcrição
+com Whisper (modelo `small`, baixado dos releases do sherpa-onnx no GitHub) e
+conferidos transcrevendo o vídeo final de novo.
