@@ -133,3 +133,77 @@ quadro.
 - 6 frames em 329 ficaram sem detecção das duas pessoas e saem idênticos ao
   original.
 - Os 78 frames finais são o card do logo, sem pessoas — passam intactos.
+
+---
+
+# Tutorial "Como gravar para a agência" (SuperLav)
+
+Vídeo para mandar ao cliente ensinando a gravar os takes que a agência vai
+editar. Montado só com os takes brutos da própria lavanderia, com o jeito
+certo e os erros lado a lado.
+
+**Saída:** `out/tutorial-gravacao.mp4` — 81s, 1080x1920, 30fps, ~38 MB.
+
+## Roteiro
+
+| Parte | Mensagem | Takes |
+|---|---|---|
+| Abertura | Como gravar vídeos para a agência | 0850 |
+| Passo 1 | Celular em pé (certo × deitado) | 0838, 0836 |
+| Passo 2 | Mostre onde fica: fachada e chegada | 0773, 0759 |
+| Passo 3 | Passo a passo do serviço | 0775, 0776, 0779, 0873, 0780 |
+| Passo 4 | Chegue perto: detalhes | 0814, 0841 |
+| Passo 5 | Ambiente com movimento lento | 0830, 0856 |
+| Passo 6 | Fale para a câmera (áudio original) | 0851, 0795 |
+| Cuidado | Chão, lente suja, gravação sem querer, cortar cedo | 0799, 0825, 0823, 0795 |
+| Checklist | 7 regras antes de gravar | — |
+
+## Rodar
+
+```bash
+python3 src/render_tutorial.py --takes /pasta/com/os/IMG_xxxx.MP4 --out out/tutorial-gravacao.mp4
+```
+
+Os takes não ficam no repositório (são ~750 MB, na pasta do Drive do
+cliente). Para trocar um trecho ou um texto, edite a lista `SECTIONS` no topo
+do script: cada cena tem o take, o intervalo em segundos, o texto e se é
+"ok" (assim sim) ou "bad" (assim não). O `CHECKLIST` fica logo abaixo.
+
+## Áudio
+
+- Falas (Passo 6) entram altas; o resto mantém o som ambiente baixinho.
+- A trilha é gerada pelo próprio script (pad + arpejo), sem direitos
+  autorais, e abaixa sozinha quando alguém fala.
+
+## Limites
+
+- Só 53 dos 92 takes da pasta entraram na análise: a conexão com o Drive
+  não baixa arquivos acima de ~5 MB. Os takes longos (provavelmente as falas
+  mais completas) ficaram de fora.
+- Sem transcrição automática: o modelo de voz não pôde ser baixado nesta
+  rede. As falas usadas são curtas e entram com o áudio original.
+
+---
+
+# Vídeo de dicas (ajuste do vídeo de WhatsApp)
+
+Vídeo de 3 min, gravado pela agência na SuperLav, com dicas para o cliente:
+fachada, vertical e horizontal, entorno, localização e estacionamento.
+
+**Saída:** `out/dicas-gravacao.mp4` — 2:39, 1080x1920, 30fps, ~63 MB.
+
+- **Áudio original**, só com o volume nivelado (-14 LUFS). Sem trilha.
+- Cortes de silêncios e respiros, e as duas demonstrações sem fala
+  (filmando o entorno e o posto) encurtadas para o melhor pedaço.
+- Subido de 576x1024 para 1080x1920, com nitidez e cor levemente realçadas.
+- Título de cada dica no topo e a frase-chave na base, no mesmo visual do
+  tutorial.
+
+```bash
+python3 src/edit_dicas.py --src video-do-whatsapp.mp4 --out out/dicas-gravacao.mp4
+```
+
+Os cortes (`KEEP`) e os textos (`SECTIONS`, `CALLOUTS`) ficam no topo do
+script, em segundos do vídeo original. Eles foram tirados de uma transcrição
+com Whisper (modelo `small`, baixado dos releases do sherpa-onnx no GitHub) e
+conferidos transcrevendo o vídeo final de novo.
